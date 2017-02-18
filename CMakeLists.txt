@@ -9,6 +9,9 @@ set(PROJECT_VERSION_MINOR "0")
 set(PROJECT_VERSION_PATCH "0")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
+# c++ language configuration
+set(CMAKE_CXX_STANDARD 11)
+
 # package configuration
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 

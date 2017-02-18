@@ -26,6 +26,7 @@ This will produce the "i18n.qrc" with the following content:
 Dependencies
 ------------
 
+* C++11
 * CMake (version 3.6+)
 * Boost C++ Library
 
