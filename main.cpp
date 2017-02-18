@@ -13,46 +13,52 @@ boost::property_tree::ptree build_ptree(const CommandLine& command_line)
 	boost::property_tree::ptree ptree;
 
 	// extract command line options
-	boost::optional<std::string> global_prefix =  command_line.getGlobalPrefix();
-	boost::optional<std::string> local_prefix  =  command_line.getLocalPrefix();
-	boost::optional<std::string> language      =  command_line.getLanguage();
-	std::vector<std::string> files             = *command_line.getFilePaths();
+	boost::optional<std::string> global_prefix      = command_line.getGlobalPrefix();
+	boost::optional<std::string> local_prefix       = command_line.getLocalPrefix();
+	boost::optional<std::string> language           = command_line.getLanguage();
+	boost::optional<std::vector<std::string>> files = command_line.getFilePaths();
 
-	// sort the file list in ascending order
-	std::sort(files.begin(), files.end());
-
-	// setup base property tree structure
+	// setup qresource attributes
 	boost::property_tree::ptree& qresource_element = ptree.put("RCC.qresource", "");
 
 	if(global_prefix)
 	{
 		qresource_element.put("<xmlattr>.prefix", *global_prefix);
 	}
+	else
+	{
+		qresource_element.put("<xmlattr>.prefix", "/");
+	}
+
 	if(language)
 	{
 		qresource_element.put("<xmlattr>.lang", *language);
 	}
 
-	// add in each file element into the ptree
-	for(const std::string& file : files)
+	// add files into the qresource
+	if(files)
 	{
-		boost::property_tree::ptree file_element;
+		std::sort(files->begin(), files->end());
 
-		file_element.put_value(file);
-
-		if(local_prefix)
+		for (const std::string &file : *files)
 		{
-			file_element.put("<xmlattr>.alias", (boost::filesystem::path(*local_prefix) / boost::filesystem::path(file).filename()).string());
-		}
-		else
-		{
-			file_element.put("<xmlattr>.alias", boost::filesystem::path(file).filename().string());
-		}
+			boost::property_tree::ptree file_element;
 
-		qresource_element.add_child("file", file_element);
+			if (local_prefix)
+			{
+				file_element.put("<xmlattr>.alias", (boost::filesystem::path(*local_prefix) / boost::filesystem::path(file).filename()).string());
+			}
+			else
+			{
+				file_element.put("<xmlattr>.alias", boost::filesystem::path(file).filename().string());
+			}
+
+			file_element.put_value(file);
+			qresource_element.add_child("file", file_element);
+		}
 	}
 
-	// return the constructed ptree
+	// return the constructed property tree
 	return ptree;
 }
 

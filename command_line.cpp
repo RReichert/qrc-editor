@@ -1,8 +1,9 @@
 #include "command_line.h"
 
-#include <vector>
 #include <boost/format.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/program_options/parsers.hpp>
 
 CommandLine::CommandLine(int argc, char** argv) :
 	argc(argc),
@@ -18,10 +19,11 @@ CommandLine::CommandLine(int argc, char** argv) :
 		("language,l",      boost::program_options::value<std::string>(),              "sets the language used by the files")
 //		("append,a",        boost::program_options::value<std::string>(),              "appends the files onto the qrc file")
 //		("remove,r",        boost::program_options::value<std::string>(),              "removes the files from the qrc file")
-		("qrc",             boost::program_options::value<std::string>(),              "qrc file to edit")
-		("files",           boost::program_options::value<std::vector<std::string>>(), "files to write/append/remove to/from qrc file")
+		("qrc",             boost::program_options::value<std::string>(),              "qrc file to write")
+		("files",           boost::program_options::value<std::vector<std::string>>(), "files to add to qrc file")
 		("help,h",          "prints this help message");
 
+	// NOTE: if you change these options, make sure they reflect in the getUsage() method
 	positional_options_description.add("qrc",    1);
 	positional_options_description.add("files", -1);
 
@@ -52,7 +54,7 @@ CommandLine::CommandLine(int argc, char** argv) :
 			{
 				for(const std::string& file : options["files"].as<std::vector<std::string>>())
 				{
-					if (!boost::filesystem::exists(file))
+					if (!boost::filesystem::is_regular_file(file))
 					{
 						error = (boost::format("error: input file \"%1%\" does not exist") % file).str();
 						break;
@@ -75,7 +77,7 @@ boost::optional<std::string> CommandLine::getGlobalPrefix() const
 	}
 	else
 	{
-		boost::none;
+		return boost::none;
 	}
 }
 
@@ -154,7 +156,7 @@ boost::optional<std::string> CommandLine::getError() const
 	return error;
 }
 
-boost::optional<std::string> CommandLine::getUsage() const
+std::string CommandLine::getUsage() const
 {
-	return (boost::format("usage: %1%\n%2%") % argv[0] % options_description).str();
+	return (boost::format("usage: %1% [options] qrc_file [files...]\n%2%") % argv[0] %options_description).str();
 }

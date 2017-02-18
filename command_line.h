@@ -1,9 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
 #include <boost/optional.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/program_options.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/positional_options.hpp>
+#include <boost/program_options/options_description.hpp>
 
 /**
  * Class offers the ability to process the command line arguments
@@ -70,7 +74,7 @@ class CommandLine
 		/**
 		 * @return help message for the command
 		 */
-		boost::optional<std::string> getUsage() const;
+		std::string getUsage() const;
 
 	private:
 

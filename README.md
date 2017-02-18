@@ -23,6 +23,12 @@ This will produce the "i18n.qrc" with the following content:
 	  </qresource>
 	</RCC>
 
+Dependencies
+------------
+
+* CMake (version 3.6+)
+* Boost C++ Library
+
 Future Features
 ---------------
 
