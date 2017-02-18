@@ -17,9 +17,9 @@ This will produce the "i18n.qrc" with the following content:
 	<?xml version="1.0" encoding="utf-8"?>
 	<RCC>
 	  <qresource prefix="/i18n">
-	    <file alias="hello/lang-de.ts">../translations/lang-de.ts</file>
-	    <file alias="hello/lang-en.ts">../translations/lang-en.ts</file>
-	    <file alias="hello/lang-pt.ts">../translations/lang-pt.ts</file>
+	    <file alias="lang-de.ts">../translations/lang-de.ts</file>
+	    <file alias="lang-en.ts">../translations/lang-en.ts</file>
+	    <file alias="lang-zh.ts">../translations/lang-zh.ts</file>
 	  </qresource>
 	</RCC>
 
