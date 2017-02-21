@@ -14,13 +14,14 @@ CommandLine::CommandLine(int argc, char** argv) :
 	error()
 {
 	options_description.add_options()
-		("global_prefix,P", boost::program_options::value<std::string>(),              "sets the global prefix path for the files")
-		("local_prefix,p",  boost::program_options::value<std::string>(),              "sets the per file prefix for the file's alias")
-		("language,l",      boost::program_options::value<std::string>(),              "sets the language used by the files")
-//		("append,a",        boost::program_options::value<std::string>(),              "appends the files onto the qrc file")
-//		("remove,r",        boost::program_options::value<std::string>(),              "removes the files from the qrc file")
-		("qrc",             boost::program_options::value<std::string>(),              "qrc file to write")
-		("files",           boost::program_options::value<std::vector<std::string>>(), "files to add to qrc file")
+		("global_prefix,P", boost::program_options::value<std::string>(),                     "qrc prefix")
+		("local_prefix,p",  boost::program_options::value<std::string>(),                     "qrc prefix for file alias")
+		("language,l",      boost::program_options::value<std::string>(),                     "qrc language")
+		("relative_path,r", boost::program_options::value<std::string>()->default_value("."), "relative input files will be prefixed with this path")
+//		("append,a",        boost::program_options::value<std::string>(),                     "appends the files onto the qrc file")
+//		("remove,r",        boost::program_options::value<std::string>(),                     "removes the files from the qrc file")
+		("qrc",             boost::program_options::value<std::string>(),                     "ouput qrc file path")
+		("files",           boost::program_options::value<std::vector<std::string>>(),        "input files to include in output qrc file")
 		("help,h",          "prints this help message");
 
 	// NOTE: if you change these options, make sure they reflect in the getUsage() method
@@ -103,6 +104,11 @@ boost::optional<std::string> CommandLine::getLanguage() const
 	{
 		return boost::none;
 	}
+}
+
+std::string CommandLine::getRelativePath() const
+{
+	return options["relative_prefix"].as<std::string>();
 }
 
 bool CommandLine::isAppendMode() const

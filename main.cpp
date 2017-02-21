@@ -38,6 +38,17 @@ boost::property_tree::ptree build_ptree(const CommandLine& command_line)
 	// add files into the qresource
 	if(files)
 	{
+		std::for_each(files->begin(), files->end(), [&command_line](std::string& file)
+		{
+			boost::filesystem::path file_path(file);
+			boost::filesystem::path relative_path(command_line.getRelativePath());
+
+			if(file_path.is_relative())
+			{
+				file = (relative_path / file_path).string();
+			}
+		});
+
 		std::sort(files->begin(), files->end());
 
 		for (const std::string &file : *files)

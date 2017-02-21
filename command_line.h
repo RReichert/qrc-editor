@@ -42,6 +42,11 @@ class CommandLine
 		boost::optional<std::string> getLanguage() const;
 
 		/**
+		 * @return the path that each relative input file should be prepended with
+		 */
+		std::string getRelativePath() const;
+
+		/**
 		 * @return if the append mode was set
 		 */
 		bool isAppendMode() const;
