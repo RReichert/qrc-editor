@@ -40,33 +40,48 @@ CommandLine::CommandLine(int argc, char** argv) :
 		);
 
 		boost::program_options::notify(options);
-
-		if(!options.count("help"))
-		{
-			if(!options.count("qrc"))
-			{
-				error = "qrc file is missing";
-			}
-			else if(options.count("append") + options.count("delete") > 1)
-			{
-				error = "multiple operations selected on the qrc";
-			}
-			else if(options.count("files"))
-			{
-				for(const std::string& file : options["files"].as<std::vector<std::string>>())
-				{
-					if (!boost::filesystem::is_regular_file(file))
-					{
-						error = (boost::format("error: input file \"%1%\" does not exist") % file).str();
-						break;
-					}
-				}
-			}
-		}
 	}
 	catch(const boost::program_options::error& e)
 	{
 		error = e.what();
+		return;
+	}
+
+	if(!options.count("help"))
+	{
+		if(!options.count("qrc"))
+		{
+			error = "qrc file is missing";
+		}
+		else if(options.count("append") + options.count("delete") > 1)
+		{
+			error = "multiple operations selected on the qrc";
+		}
+		else if(options.count("files"))
+		{
+			std::vector<std::string> files(options["files"].as<std::vector<std::string>>());
+			boost::filesystem::path relative_path(options["relative_path"].as<std::string>());
+
+			for(std::string& file : files)
+			{
+				boost::filesystem::path file_path(file);
+
+				if(file_path.is_relative())
+				{
+					file_path = relative_path / file_path;
+				}
+
+				if (!boost::filesystem::is_regular_file(file_path))
+				{
+					error = (boost::format("error: input file \"%1%\" does not exist") % file_path.string()).str();
+					break;
+				}
+
+				file = file_path.string();
+			}
+
+			options.at("files").value() = boost::any(files);
+		}
 	}
 }
 
@@ -104,11 +119,6 @@ boost::optional<std::string> CommandLine::getLanguage() const
 	{
 		return boost::none;
 	}
-}
-
-std::string CommandLine::getRelativePath() const
-{
-	return options["relative_prefix"].as<std::string>();
 }
 
 bool CommandLine::isAppendMode() const
